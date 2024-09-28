@@ -27,12 +27,21 @@ def scan_jar_for_connections(jar_path):
                                 decoded_content = file_content.decode('utf-8', errors='ignore')
                                 suspicious_lines = []
                                 for i, line in enumerate(decoded_content.splitlines()):
-                                    if (https_pattern.search(line) or
-                                        discord_pattern.search(line) or
-                                        webhook_pattern.search(line) or
-                                        bot_token_pattern.search(line) or
-                                        api_pattern.search(line)):
-                                        suspicious_lines.append((i + 1, line.strip()))
+                                    connection_type = None
+                                    if https_pattern.search(line):
+                                        connection_type = "HTTPS"
+                                    elif discord_pattern.search(line):
+                                        connection_type = "Discord"
+                                    elif webhook_pattern.search(line):
+                                        connection_type = "Discord Webhook"
+                                    elif bot_token_pattern.search(line):
+                                        connection_type = "Bot Token"
+                                    elif api_pattern.search(line):
+                                        connection_type = "API"
+
+                                    if connection_type:
+                                        suspicious_lines.append((i + 1, line.strip(), connection_type))
+
                                 if suspicious_lines:
                                     suspicious_files[file_path] = suspicious_lines
                             except UnicodeDecodeError:
@@ -53,8 +62,8 @@ def main():
             print(f"Suspicious connections found in the following files:")
             for file, lines in result.items():
                 print(f"\nFile: {file}")
-                for line_no, line in lines:
-                    print(f"  Line {line_no}: {line}")
+                for line_no, line, connection_type in lines:
+                    print(f"  Line {line_no} ({connection_type}): {line}")
         else:
             print("No suspicious connections or Discord-related content found.")
     else:
@@ -62,4 +71,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

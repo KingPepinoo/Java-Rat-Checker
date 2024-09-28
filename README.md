@@ -7,6 +7,7 @@ This is an open source tool. This tool is designed to scan Minecraft mods for hi
 
 # Running the Tool
 - You can run the scanner by right-clicking the script and selecting Open with Python. The script will prompt you to enter the path to the .jar file you want to scan.
+- You can run the run.bat file and it will run the script (You still need to have python 3.12 or greater installed.)
 
 
 # Issues and Support

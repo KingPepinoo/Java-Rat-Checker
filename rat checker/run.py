@@ -66,13 +66,31 @@ def main():
         # Check for flags in connection_checker output
         results = []
         if "Suspicious connections found" in connection_output:
-            results.append("This file is a rat.")
+            results.append("This file is a rat due to suspicious connections.")
+            
+            # Parse connection type details
+            for line in connection_output.splitlines():
+                if "HTTPS" in line:
+                    results.append(" - Detected an HTTPS connection.")
+                elif "Discord Webhook" in line:
+                    results.append(" - Detected a Discord webhook connection.")
+                elif "Bot Token" in line:
+                    results.append(" - Detected a bot token.")
+                elif "API" in line:
+                    results.append(" - Detected an API connection.")
         elif "No suspicious connections or Discord-related content found." in connection_output:
             results.append("Connection check passed.")
 
         # Check for flags in obfuscation_checker output
         if "Obfuscated code detected" in obfuscation_output:
-            results.append("It is likely this mod is a rat.")
+            results.append("It is likely this mod is a rat due to obfuscation.")
+            
+            # Parse obfuscation level details
+            for line in obfuscation_output.splitlines():
+                if "Highly Obfuscated" in line:
+                    results.append(" - Detected highly obfuscated code.")
+                elif "Partially Obfuscated" in line:
+                    results.append(" - Detected partially obfuscated code.")
         elif "No obfuscated code detected." in obfuscation_output:
             results.append("Obfuscation check passed.")
         
@@ -97,6 +115,4 @@ def main():
         time.sleep(3)  # Wait for 3 seconds before closing on error
 
 if __name__ == '__main__':
-    main()
-
     main()

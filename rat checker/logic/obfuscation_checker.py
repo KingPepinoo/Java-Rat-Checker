@@ -11,7 +11,7 @@ def check_for_obfuscation(class_dir):
     """Check extracted .class files for obfuscated code."""
     obfuscated_files = []
     
-    # Define a simple heuristic for obfuscation detection
+    # Define heuristics for obfuscation detection
     for root, _, files in os.walk(class_dir):
         for file in files:
             if file.endswith('.class'):
@@ -19,14 +19,21 @@ def check_for_obfuscation(class_dir):
                 with open(file_path, 'rb') as f:
                     content = f.read()
 
-                    # Check for certain byte patterns that are common in obfuscated files
-                    if b'\x00' in content or len(set(content)) < 50:  # Example heuristic
-                        obfuscated_files.append(file_path)
+                    # Heuristic for "highly" obfuscated files (low number of unique bytes)
+                    unique_bytes = len(set(content))
+                    highly_obfuscated = unique_bytes < 30
+                    
+                    # Heuristic for "partially" obfuscated files (very short content)
+                    partially_obfuscated = len(content) < 100 and not highly_obfuscated
+
+                    if highly_obfuscated:
+                        obfuscated_files.append((file_path, 'Highly Obfuscated'))
+                    elif partially_obfuscated:
+                        obfuscated_files.append((file_path, 'Partially Obfuscated'))
 
     return obfuscated_files
 
 def main():
-    # Check if the jar path is provided as an argument
     if len(sys.argv) < 2:
         print("Usage: python obfuscation_checker.py <path_to_jar>")
         return
@@ -41,8 +48,8 @@ def main():
 
     if obfuscated_files:
         print("Obfuscated code detected in the following files:")
-        for obfuscated_file in obfuscated_files:
-            print(f" - {obfuscated_file}")
+        for obfuscated_file, obfuscation_level in obfuscated_files:
+            print(f" - {obfuscated_file} ({obfuscation_level})")
     else:
         print("No obfuscated code detected.")
 

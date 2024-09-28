@@ -6,7 +6,7 @@ This tool is designed to scan Minecraft mods for high obfuscation and suspicious
 - Python: Version 3.12 or higher is required. You can download Python from the Microsoft Store.
 
 # Running the Tool
-Alternatively, you can run the scanner by right-clicking the script and selecting Open with Python. The script will prompt you to enter the path to the .jar file you want to scan.
+- You can run the scanner by right-clicking the script and selecting Open with Python. The script will prompt you to enter the path to the .jar file you want to scan.
 
 
 # Issues and Support

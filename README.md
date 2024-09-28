@@ -27,11 +27,11 @@ If you encounter any issues or have requests, please join our community on Disco
   - Randomized byte patterns that are typical of obfuscated code.
   - Low diversity of unique bytes, which is often used in compression or encryption-based obfuscation.
 - Classifies files as "Highly Obfuscated" or "Partially Obfuscated."
-
+# 
 # Keep in mind
 - **No suspicious connections or obfuscation detected:** Not all mods that use obfuscation are malicious. If nothing is flagged, the mod might be safe, but it’s always good to double-check the source of your mods.
 - **Invalid characters in results file:** The scanner skips over non-UTF-8 encoded files to avoid crashes, but certain files may still contain unrecognized characters.
-
+# 
 # Example Output in Results File
 Connection Checker Output:
 Suspicious connections found in the following files:

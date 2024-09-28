@@ -20,6 +20,7 @@ If you encounter any issues or have requests, please join our community on Disco
   - Discord-related connections (e.g., discordapp.com, discord.gg, webhooks)
   - Suspicious API calls or bot tokens
 - Flags any lines of code that contain these patterns.
+
 **Obfuscation Checker** (obfuscation_checker.py)
 - Extracts .class files from the .jar.
 - Analyzes the bytecode for:

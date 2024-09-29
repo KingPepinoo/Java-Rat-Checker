@@ -5,7 +5,8 @@ import sys
 import tempfile
 
 def scan_jar_for_connections(jar_path):
-    https_pattern = re.compile(r'https://')
+    # Patterns for various types of suspicious connections
+    https_pattern = re.compile(r'https://[^ \n]+')
     discord_pattern = re.compile(r'(discord(app)?\.com|discord\.gg)')
     webhook_pattern = re.compile(r'discord(app)?\.com/api/webhooks')
     bot_token_pattern = re.compile(r'Bot\s+[A-Za-z0-9\-_]+')
@@ -28,19 +29,28 @@ def scan_jar_for_connections(jar_path):
                                 suspicious_lines = []
                                 for i, line in enumerate(decoded_content.splitlines()):
                                     connection_type = None
+                                    connection_info = None
+
+                                    # Check for suspicious connections
                                     if https_pattern.search(line):
+                                        connection_info = https_pattern.findall(line)
                                         connection_type = "HTTPS"
                                     elif discord_pattern.search(line):
+                                        connection_info = discord_pattern.findall(line)
                                         connection_type = "Discord"
                                     elif webhook_pattern.search(line):
+                                        connection_info = webhook_pattern.findall(line)
                                         connection_type = "Discord Webhook"
                                     elif bot_token_pattern.search(line):
+                                        connection_info = bot_token_pattern.findall(line)
                                         connection_type = "Bot Token"
                                     elif api_pattern.search(line):
+                                        connection_info = api_pattern.findall(line)
                                         connection_type = "API"
 
-                                    if connection_type:
-                                        suspicious_lines.append((i + 1, line.strip(), connection_type))
+                                    if connection_type and connection_info:
+                                        for conn in connection_info:
+                                            suspicious_lines.append((i + 1, conn, connection_type))
 
                                 if suspicious_lines:
                                     suspicious_files[file_path] = suspicious_lines

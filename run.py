@@ -55,6 +55,7 @@ def main():
 
         connection_output = run_script('connection_checker.py', jar_path)
         obfuscation_output = run_script('obfuscation_checker.py', jar_path)
+        dll_output = run_script('dll_scanner.py', jar_path)
 
         # Print the output for debugging
         print("\nConnection Checker Output:")
@@ -62,6 +63,9 @@ def main():
         
         print("\nObfuscation Checker Output:")
         print(obfuscation_output)
+
+        print("\nDLL Scanner Output:")
+        print(dll_output)
 
         # Results and explanations for the report
         results = []
@@ -93,13 +97,25 @@ def main():
                     results.append(" - Detected partially obfuscated code.")
         elif "No obfuscated code detected." in obfuscation_output:
             results.append("Obfuscation check passed.")
-        
+
+        # Check for .dll results in the dll_scanner output
+        if "DLL files detected" in dll_output:
+            results.append("Suspicious .dll files found.")
+            # Log each .dll found
+            for line in dll_output.splitlines():
+                if line.startswith(" - "):
+                    results.append(f"   {line}")
+        else:
+            results.append("No .dll files detected.")
+
         # Write all outputs to the results file
         with open(results_file_path, "w") as f:
             f.write("Connection Checker Output:\n")
             f.write(connection_output + "\n")
             f.write("Obfuscation Checker Output:\n")
             f.write(obfuscation_output + "\n")
+            f.write("DLL Scanner Output:\n")
+            f.write(dll_output + "\n")
             f.write("\nFinal Results:\n")
             for result in results:
                 f.write(result + "\n")
@@ -121,4 +137,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

@@ -29,6 +29,10 @@ If you encounter any issues or have requests, please join our community on Disco
   - Randomized byte patterns that are typical of obfuscated code.
   - Low diversity of unique bytes, which is often used in compression or encryption-based obfuscation.
 - Classifies files as "Highly Obfuscated" or "Partially Obfuscated."
+
+**Dll Scanner** (dll_scanner.py)
+- Inspects the jar and searches the directory for anything containing ".dll"
+- I've seen rats which grab a dll and whatnot so its good to have.
 # 
 # Keep in mind
 - **No suspicious connections or obfuscation detected:** Not all mods that use obfuscation are malicious. If nothing is flagged, the mod might be safe, but it’s always good to double-check the source of your mods.

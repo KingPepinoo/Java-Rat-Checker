@@ -37,6 +37,7 @@ If you encounter any issues or have requests, please join our community on Disco
 # Keep in mind
 - **No suspicious connections or obfuscation detected:** Not all mods that use obfuscation are malicious. If nothing is flagged, the mod might be safe, but it’s always good to double-check the source of your mods.
 - **Invalid characters in results file:** The scanner skips over non-UTF-8 encoded files to avoid crashes, but certain files may still contain unrecognized characters.
+- **What is cfr.jar?** cfr.jar is a java decompilere **Do not do anything with cfr, just keep it there.** 
 # 
 # Example Output in Results File
 Connection Checker Output:

@@ -4,14 +4,17 @@ from datetime import datetime
 import time
 import re
 
-def run_script(script_name, jar_path):
+def run_script(script_name, jar_path, extra_args=None):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     logic_folder = os.path.join(current_dir, 'logic')
     script_path = os.path.join(logic_folder, script_name)
 
     if os.path.exists(script_path):
         print(f"Running {script_path}...")
-        result = subprocess.run(['python', script_path, jar_path], capture_output=True, text=True)
+        command = ['python', script_path, jar_path]
+        if extra_args:
+            command.extend(extra_args)
+        result = subprocess.run(command, capture_output=True, text=True)
         return result.stdout
     else:
         print(f"{script_path} does not exist.")
@@ -58,6 +61,10 @@ def main():
         obfuscation_output = run_script('obfuscation_checker.py', jar_path)
         dll_output = run_script('dll_scanner.py', jar_path)
 
+        # Run the import checker, providing the path to cfr.jar
+        cfr_jar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cfr.jar')
+        import_output = run_script('import_checker.py', jar_path, extra_args=[cfr_jar_path])
+
         print("\nConnection Checker Output:")
         print(connection_output)
         
@@ -66,6 +73,9 @@ def main():
 
         print("\nDLL Scanner Output:")
         print(dll_output)
+
+        print("\nImport Checker Output:")
+        print(import_output)
 
         results = []
         suspicious_connections = check_for_suspicious_connections(connection_output)
@@ -88,6 +98,11 @@ def main():
         else:
             results.append("No .dll files detected.")
 
+        if "Suspicious imports detected" in import_output:
+            results.append("Suspicious imports found in the code.")
+        else:
+            results.append("Import check passed.")
+
         with open(results_file_path, "w") as f:
             f.write("Connection Checker Output:\n")
             f.write(connection_output + "\n")
@@ -95,6 +110,8 @@ def main():
             f.write(obfuscation_output + "\n")
             f.write("DLL Scanner Output:\n")
             f.write(dll_output + "\n")
+            f.write("Import Checker Output:\n")
+            f.write(import_output + "\n")
             f.write("\nFinal Results:\n")
             for result in results:
                 f.write(result + "\n")

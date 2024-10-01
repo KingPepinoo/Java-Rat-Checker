@@ -34,11 +34,25 @@ If you encounter any issues or have requests, please join our community on Disco
 **Dll Scanner** (dll_scanner.py)
 - Inspects the jar and searches the directory for anything containing ".dll"
 - I've seen rats which grab a dll and whatnot so its good to have.
+
+**Import Checker** (import_checker.py)
+- Purpose: Scans for suspicious import statements that are commonly used in malicious mods to hide network connections or other harmful activities.
+- How it Works:
+  - Decompiles the .class files from the .jar using cfr.jar.
+  - Scans the decompiled .java files for import statements matching patterns of interest.
+- Suspicious Imports Detected:
+  - java.net.*
+  - java.nio.channels.*
+  - javax.net.*
+  - org.apache.http.*
+  - Any other imports that match common patterns used in malicious code.
+- Flags any files that contain these suspicious imports.
+
 # 
 # Keep in mind
 - **No suspicious connections or obfuscation detected:** Not all mods that use obfuscation are malicious. If nothing is flagged, the mod might be safe, but it’s always good to double-check the source of your mods.
 - **Invalid characters in results file:** The scanner skips over non-UTF-8 encoded files to avoid crashes, but certain files may still contain unrecognized characters.
-- **What is cfr.jar?** cfr.jar is a java decompilere **Do not do anything with cfr, just keep it there.** 
+- **What is cfr.jar?:** cfr.jar is a Java decompiler used by the Import Checker to decompile .class files back into readable .java source code. This allows the tool to analyze import statements that might indicate malicious activity. Do not modify or delete cfr.jar; just ensure it is placed in the correct directory.
 # 
 # Example Output in Results File
 Connection Checker Output:

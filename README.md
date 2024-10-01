@@ -4,6 +4,7 @@ This is an open source tool. This tool is designed to scan Minecraft mods for hi
 
 # Requirements
 - Python: Version 3.12 or higher is required. You can download Python from the Microsoft Store.
+- Java: Required for the Import Checker to function. Ensure that Java is installed and the java command is accessible from the command line.
 
 # Running the Tool
 - You can run the scanner by right-clicking the script and selecting Open with Python. The script will prompt you to enter the path to the .jar file you want to scan.

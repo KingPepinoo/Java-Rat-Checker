@@ -53,6 +53,7 @@ If you encounter any issues or have requests, please join our community on Disco
 - **No suspicious connections or obfuscation detected:** Not all mods that use obfuscation are malicious. If nothing is flagged, the mod might be safe, but it’s always good to double-check the source of your mods.
 - **Invalid characters in results file:** The scanner skips over non-UTF-8 encoded files to avoid crashes, but certain files may still contain unrecognized characters.
 - **What is cfr.jar?:** cfr.jar is a Java decompiler used by the Import Checker to decompile .class files back into readable .java source code. This allows the tool to analyze import statements that might indicate malicious activity. Do not modify or delete cfr.jar; just ensure it is placed in the correct directory.
+- **suspicious connections** If a mod must connect to an HTTPS like tiertagger does with mctiers, it may be false. I recomend downloading jd-gui https://java-decompiler.github.io/ and looking further into the specific calls or imports.
 # 
 # Example Output in Results File
 Connection Checker Output:

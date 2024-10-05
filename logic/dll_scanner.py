@@ -1,3 +1,4 @@
+# dll_scanner.py
 import zipfile
 import os
 import sys

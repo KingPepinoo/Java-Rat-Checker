@@ -1,9 +1,20 @@
+# import_checker.py
 import os
 import sys
 import subprocess
 import tempfile
 import re
 import zipfile
+import json
+
+def load_excluded_patterns(config_path):
+    """Load exclusion patterns from the cfg.json file."""
+    if not os.path.exists(config_path):
+        print(f"Configuration file {config_path} does not exist.")
+        return []
+    with open(config_path, 'r') as config_file:
+        config = json.load(config_file)
+    return [re.compile(pattern, re.IGNORECASE) for pattern in config.get("import_checker_exclusions", [])]
 
 def decompile_class_files(jar_path, decompiler_path, output_dir):
     """Decompile .class files from the .jar using CFR."""
@@ -17,7 +28,6 @@ def decompile_class_files(jar_path, decompiler_path, output_dir):
             if file.endswith('.class'):
                 class_file = os.path.join(root, file)
                 # Decompile the .class file to .java
-                relative_path = os.path.relpath(class_file, output_dir)
                 java_file_path = os.path.splitext(class_file)[0] + '.java'
                 java_files.append(java_file_path)
                 
@@ -29,10 +39,12 @@ def decompile_class_files(jar_path, decompiler_path, output_dir):
                 ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return java_files
 
-def scan_java_files(java_files):
+def scan_java_files(java_files, excluded_patterns):
     """Scan decompiled .java files for suspicious imports."""
     suspicious_imports = {}
     import_pattern = re.compile(r'^\s*import\s+([a-zA-Z0-9_.]+);', re.MULTILINE)
+    
+    # Define patterns for suspicious imports
     suspicious_patterns = [
         re.compile(r'^java\.net\.', re.IGNORECASE),
         re.compile(r'^java\.nio\.channels\.', re.IGNORECASE),
@@ -47,6 +59,16 @@ def scan_java_files(java_files):
                 content = f.read()
                 imports = import_pattern.findall(content)
                 for imp in imports:
+                    # Check if the import matches any exclusion pattern
+                    exclude = False
+                    for ex_pattern in excluded_patterns:
+                        if ex_pattern.match(imp):
+                            exclude = True
+                            break
+                    if exclude:
+                        continue  # Skip this import as it's excluded
+                    
+                    # Check if the import matches any suspicious pattern
                     for pattern in suspicious_patterns:
                         if pattern.match(imp):
                             if java_file not in suspicious_imports:
@@ -58,11 +80,12 @@ def scan_java_files(java_files):
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: python import_checker.py <path_to_jar> <path_to_cfr_jar>")
+        print("Usage: python import_checker.py <path_to_jar> <path_to_cfr_jar> [<config_path>]")
         return
 
     jar_path = sys.argv[1]
     decompiler_path = sys.argv[2]
+    config_path = sys.argv[3] if len(sys.argv) > 3 else 'cfg.json'
 
     if not os.path.exists(jar_path):
         print(f"File at {jar_path} does not exist.")
@@ -75,8 +98,12 @@ def main():
     with tempfile.TemporaryDirectory() as temp_dir:
         print("Decompiling class files...")
         java_files = decompile_class_files(jar_path, decompiler_path, temp_dir)
+        
+        # Load exclusion patterns
+        excluded_patterns = load_excluded_patterns(config_path)
+        
         print("Scanning for suspicious imports...")
-        suspicious_imports = scan_java_files(java_files)
+        suspicious_imports = scan_java_files(java_files, excluded_patterns)
 
         if suspicious_imports:
             print("Suspicious imports detected:")

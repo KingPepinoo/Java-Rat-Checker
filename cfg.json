@@ -1,0 +1,13 @@
+{
+    "connection_checker_exclusions": [
+        "^import\\s+net\\.fabricmc\\.api\\."
+    ],
+    "import_checker_exclusions": [
+        "^net\\.fabricmc\\.api\\."
+    ],
+    "blacklisted_mods": [
+        "LISCENCE_TGSOG_RECODE",
+        "LISCENCE TGSOG RECODE",
+         "TGSOG"
+    ]
+}

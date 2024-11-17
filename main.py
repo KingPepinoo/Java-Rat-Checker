@@ -3,6 +3,7 @@ import os
 import subprocess
 from datetime import datetime
 import time
+import re
 
 def run_script(script_name, jar_path, extra_args=None):
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -35,6 +36,15 @@ def run_import_checker(jar_path):
     else:
         print(f"{script_path} does not exist.")
         return ""
+
+def extract_suspicious_imports(import_output):
+    """Extract the suspicious imports from the import checker output."""
+    suspicious_imports = []
+    pattern = re.compile(r'^\s*-\sImport:\s(.+)$', re.MULTILINE)
+    matches = pattern.findall(import_output)
+    if matches:
+        suspicious_imports.extend(matches)
+    return suspicious_imports
 
 def run_blacklisted_mods_checker(jar_path):
     logic_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logic')
@@ -107,8 +117,11 @@ def main():
             results.append("No .dll files detected.")
 
         # Analyze Import Checker Output
-        if "Suspicious imports detected" in import_output:
-            results.append("Suspicious imports found in the code.")
+        suspicious_imports = extract_suspicious_imports(import_output)
+        if suspicious_imports:
+            results.append("Suspicious imports found in the code:")
+            for imp in suspicious_imports:
+                results.append(f" - {imp}")
         else:
             results.append("Import check passed.")
 

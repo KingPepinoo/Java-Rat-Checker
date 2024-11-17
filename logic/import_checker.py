@@ -39,20 +39,11 @@ def decompile_class_files(jar_path, decompiler_path, output_dir):
                 ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return java_files
 
-def scan_java_files(java_files, excluded_patterns):
-    """Scan decompiled .java files for suspicious imports."""
+def scan_java_files(java_files, suspicious_imports_to_scan, excluded_patterns):
+    """Scan decompiled .java files for specific suspicious imports."""
     suspicious_imports = {}
     import_pattern = re.compile(r'^\s*import\s+([a-zA-Z0-9_.]+);', re.MULTILINE)
-    
-    # Define patterns for suspicious imports
-    suspicious_patterns = [
-        re.compile(r'^java\.net\.', re.IGNORECASE),
-        re.compile(r'^java\.nio\.channels\.', re.IGNORECASE),
-        re.compile(r'^javax\.net\.', re.IGNORECASE),
-        re.compile(r'^org\.apache\.http\.', re.IGNORECASE),
-        # Add more patterns as needed
-    ]
-    
+
     for java_file in java_files:
         try:
             with open(java_file, 'r', encoding='utf-8', errors='ignore') as f:
@@ -67,13 +58,12 @@ def scan_java_files(java_files, excluded_patterns):
                             break
                     if exclude:
                         continue  # Skip this import as it's excluded
-                    
-                    # Check if the import matches any suspicious pattern
-                    for pattern in suspicious_patterns:
-                        if pattern.match(imp):
-                            if java_file not in suspicious_imports:
-                                suspicious_imports[java_file] = []
-                            suspicious_imports[java_file].append(imp)
+
+                    # Check if the import is in the list of suspicious imports
+                    if imp in suspicious_imports_to_scan:
+                        if java_file not in suspicious_imports:
+                            suspicious_imports[java_file] = []
+                        suspicious_imports[java_file].append(imp)
         except Exception as e:
             pass  # Handle exceptions if necessary
     return suspicious_imports
@@ -95,6 +85,22 @@ def main():
         print(f"CFR decompiler at {decompiler_path} does not exist.")
         return
 
+    # List of specific imports to scan for
+    suspicious_imports_to_scan = [
+        'java.io.BufferedReader',
+        'java.io.InputStreamReader',
+        'java.io.Reader',
+        'java.net.URL',
+        'java.net.URLConnection',
+        'java.security.cert.X509Certificate',
+        'javax.net.ssl.HostnameVerifier',
+        'javax.net.ssl.HttpsURLConnection',
+        'javax.net.ssl.SSLContext',
+        'javax.net.ssl.SSLSession',
+        'javax.net.ssl.TrustManager',
+        'javax.net.ssl.X509TrustManager',
+    ]
+
     with tempfile.TemporaryDirectory() as temp_dir:
         print("Decompiling class files...")
         java_files = decompile_class_files(jar_path, decompiler_path, temp_dir)
@@ -102,17 +108,17 @@ def main():
         # Load exclusion patterns
         excluded_patterns = load_excluded_patterns(config_path)
         
-        print("Scanning for suspicious imports...")
-        suspicious_imports = scan_java_files(java_files, excluded_patterns)
+        print("Scanning for specified imports...")
+        suspicious_imports = scan_java_files(java_files, suspicious_imports_to_scan, excluded_patterns)
 
         if suspicious_imports:
-            print("Suspicious imports detected:")
+            print("Specified imports detected:")
             for java_file, imports in suspicious_imports.items():
                 print(f"\nFile: {java_file}")
                 for imp in imports:
                     print(f" - Import: {imp}")
         else:
-            print("No suspicious imports detected.")
+            print("No specified imports detected.")
 
 if __name__ == '__main__':
     main()

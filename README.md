@@ -1,6 +1,6 @@
 # Minecraft Mod Scanner
 # Overview
-This is an open source tool. This tool is designed to scan Minecraft mods for high obfuscation and suspicious connections, such as HTTPS and API calls. It is currently in Beta and may contain bugs or impurities. Users are encouraged to report any issues or suggestions for improvements.
+This is an open source tool. This tool is designed to scan Minecraft mods for high obfuscation and suspicious connections, such as HTTPS and API calls. It is currently in Beta and may contain bugs or impurities. Users are encouraged to report any issues or suggestions for improvements. Windows Defender may flag your GitHub download because the code includes patterns or behaviors that resemble malicious software, such as obfuscation detection logic, webhook extraction, or the use of reflection and dynamic execution—all common in malware. Antivirus software uses heuristic analysis and might interpret these aspects of your project as suspicious, leading to a false positive.
 
 # Requirements
 - Python: Version 3.12 or higher is required. You can download Python from the Microsoft Store.
